@@ -1,129 +1,216 @@
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
+import random
 
-# C extensions
-*.so
+def main():
+    welcome = ['Welcome to Hangman! A word will be chosen at random and',
+               'you must try to guess the word correctly letter by letter',
+               'before runninout of tries. Best of luck!'
+               ]
 
-# Distribution / packaging
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-pip-wheel-metadata/
-share/python-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
+    for line in welcome:
+        print(line, sep='\n')
 
-# PyInstaller
-#  Usually these files are written by a python script from a template
-#  before PyInstaller builds the exe, so as to inject date/other infos into it.
-*.manifest
-*.spec
+    # setting up the play_again loop
 
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
+    play_again = True
 
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.nox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.py,cover
-.hypothesis/
-.pytest_cache/
+    while play_again:
+        # set up the game loop
 
-# Translations
-*.mo
-*.pot
+        words = ["hangman", "chairs", "backpack", "technology", "clothing",
+                 "computer", "frame", "program", "glasses", "college",
+                 "project", "mattress", "friends", "vecna", "genius",
+                 "algebra", "goal", "python", "eleven", "dog"
+                 ]
 
-# Django stuff:
-*.log
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
+        chosen_word = random.choice(words).lower()
+        player_guess = None # will hold the players guess
+        guessed_letters = [] # a list of letters guessed so far
+        word_guessed = []
+        for letter in chosen_word:
+            word_guessed.append("-") # create an unguessed, blank version of the word
+        joined_word = None # joins the words in the list word_guessed
 
-# Flask stuff:
-instance/
-.webassets-cache
+        HANGMAN = (
+"""
+-----
+|   |
+|
+|
+|
+|
+|
+|
+|
+--------
+""",
+"""
+-----
+|   |
+|   0
+|
+|
+|
+|
+|
+|
+--------
+""",
+"""
+-----
+|   |
+|   0
+|  -+-
+|
+|
+|
+|
+|
+--------
+""",
+"""
+-----
+|   |
+|   0
+| /-+-
+|
+|
+|
+|
+|
+--------
+""",
+"""
+-----
+|   |
+|   0
+| /-+-\ 
+|
+|
+|
+|
+|
+--------
+""",
+"""
+-----
+|   |
+|   0
+| /-+-\ 
+|   | 
+|
+|
+|
+|
+--------
+""",
+"""
+-----
+|   |
+|   0
+| /-+-\ 
+|   | 
+|   | 
+|
+|
+|
+--------
+""",
+"""
+-----
+|   |
+|   0
+| /-+-\ 
+|   | 
+|   | 
+|  |
+|
+|
+--------
+""",
+"""
+-----
+|   |
+|   0
+| /-+-\ 
+|   | 
+|   | 
+|  | 
+|  | 
+|
+--------
+""",
+"""
+-----
+|   |
+|   0
+| /-+-\ 
+|   | 
+|   | 
+|  | | 
+|  | 
+|
+--------
+""",
+"""
+-----
+|   |
+|   0
+| /-+-\ 
+|   | 
+|   | 
+|  | | 
+|  | | 
+|
+--------
+""")
 
-# Scrapy stuff:
-.scrapy
+        print(HANGMAN[0])
+        attempts = len(HANGMAN) - 1
 
-# Sphinx documentation
-docs/_build/
 
-# PyBuilder
-target/
+        while (attempts != 0 and "-" in word_guessed):
+            print(("\nYou have {} attempts remaining").format(attempts))
+            joined_word = "".join(word_guessed)
+            print(joined_word)
 
-# Jupyter Notebook
-.ipynb_checkpoints
+            try:
+                player_guess = str(input("\nPlease select a letter between A-Z" + "\n> ")).lower()
+            except: # check valid input
+                print("That is not valid input. Try again.")
+                continue                
+            else: 
+                if not player_guess.isalpha(): # check the input is a letter. Also checks an input has been made.
+                    print("That is not a letter. Try again.")
+                    continue
+                elif len(player_guess) > 1: # check the input is only one letter
+                    print("That is more than one letter. Try again.")
+                    continue
+                elif player_guess in guessed_letters: # check it letter hasn't been guessed already
+                    print("You have already guessed that letter. Try again.")
+                    continue
+                else:
+                    pass
 
-# IPython
-profile_default/
-ipython_config.py
+            guessed_letters.append(player_guess)
 
-# pyenv
-.python-version
+            for letter in range(len(chosen_word)):
+                if player_guess == chosen_word[letter]:
+                    word_guessed[letter] = player_guess # replace all letters in the chosen word that match the players guess
 
-# pipenv
-#   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
-#   However, in case of collaboration, if having platform-specific dependencies or dependencies
-#   having no cross-platform support, pipenv may install dependencies that don't work, or not
-#   install all needed dependencies.
-#Pipfile.lock
+            if player_guess not in chosen_word:
+                attempts -= 1
+                print(HANGMAN[(len(HANGMAN) - 1) - attempts])
 
-# PEP 582; used by e.g. github.com/David-OConnor/pyflow
-__pypackages__/
+        if "-" not in word_guessed: # no blanks remaining
+            print(("\nCongratulations! {} was the word").format(chosen_word))
+        else: # loop must have ended because attempts reached 0
+            print(("\nOops! The word was {}.").format(chosen_word))
 
-# Celery stuff
-celerybeat-schedule
-celerybeat.pid
+        print("\nWant to play again?")
 
-# SageMath parsed files
-*.sage.py
+        response = input("> ").lower()
+        if response not in ("yes", "y"):
+            play_again = False
 
-# Environments
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
-
-# Spyder project settings
-.spyderproject
-.spyproject
-
-# Rope project settings
-.ropeproject
-
-# mkdocs documentation
-/site
-
-# mypy
-.mypy_cache/
-.dmypy.json
-dmypy.json
-
-# Pyre type checker
-.pyre/
+if __name__ == "__main__":
+    main()
